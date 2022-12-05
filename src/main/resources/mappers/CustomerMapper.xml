@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.CustomerMapper">
+  <insert id="insert" parameterType="com.pojo.Customer">
+    insert into tb_customer (id, user_id, cust_name, 
+      cust_type, telphone, net_address, 
+      address, cust_status, create_time, 
+      create_uid, desc_info)
+    values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{custName,jdbcType=VARCHAR}, 
+      #{custType,jdbcType=INTEGER}, #{telphone,jdbcType=VARCHAR}, #{netAddress,jdbcType=VARCHAR}, 
+      #{address,jdbcType=VARCHAR}, #{custStatus,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{createUid,jdbcType=BIGINT}, #{descInfo,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.pojo.Customer">
+    insert into tb_customer
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="custName != null">
+        cust_name,
+      </if>
+      <if test="custType != null">
+        cust_type,
+      </if>
+      <if test="telphone != null">
+        telphone,
+      </if>
+      <if test="netAddress != null">
+        net_address,
+      </if>
+      <if test="address != null">
+        address,
+      </if>
+      <if test="custStatus != null">
+        cust_status,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="createUid != null">
+        create_uid,
+      </if>
+      <if test="descInfo != null">
+        desc_info,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="custName != null">
+        #{custName,jdbcType=VARCHAR},
+      </if>
+      <if test="custType != null">
+        #{custType,jdbcType=INTEGER},
+      </if>
+      <if test="telphone != null">
+        #{telphone,jdbcType=VARCHAR},
+      </if>
+      <if test="netAddress != null">
+        #{netAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null">
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="custStatus != null">
+        #{custStatus,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUid != null">
+        #{createUid,jdbcType=BIGINT},
+      </if>
+      <if test="descInfo != null">
+        #{descInfo,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <resultMap id="BaseResultMap" type="com.pojo.Customer">
+    <result column="id" jdbcType="BIGINT" property="id" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="cust_name" jdbcType="VARCHAR" property="custName" />
+    <result column="cust_type" jdbcType="INTEGER" property="custType" />
+    <result column="telphone" jdbcType="VARCHAR" property="telphone" />
+    <result column="net_address" jdbcType="VARCHAR" property="netAddress" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="cust_status" jdbcType="INTEGER" property="custStatus" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="create_uid" jdbcType="BIGINT" property="createUid" />
+    <result column="desc_info" jdbcType="VARCHAR" property="descInfo" />
+    
+    <association javaType="com.pojo.User" property="user">
+      <id column="id" jdbcType="BIGINT" property="id" />
+      <result column="username" jdbcType="VARCHAR" property="username" />
+      <result column="password" jdbcType="VARCHAR" property="password" />
+      <result column="telphone" jdbcType="VARCHAR" property="telphone" />
+      <result column="email" jdbcType="VARCHAR" property="email" />
+      <result column="address" jdbcType="VARCHAR" property="address" />
+      <result column="last_login_time" jdbcType="TIMESTAMP" property="lastLoginTime" />
+      <result column="role_id" jdbcType="BIGINT" property="roleId" />
+    </association>
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, user_id, cust_name,
+      cust_type, telphone, net_address,
+      address, cust_status, create_time,
+      create_uid, desc_info
+  </sql>
+
+  <select id="selectCustomerByPage" parameterType="map" resultMap="BaseResultMap">
+    select c.id, u1.username as username, c.cust_name, c.cust_type, c.telphone,
+           c.net_address, c.address, c.cust_status, u2.username as username
+    from tb_customer c
+    join tb_user u1 on c.user_id = u1.id
+    join tb_user u2 on c.create_uid = u2.id
+    <where>
+      <if test="userId!=null and userId!=''">
+        and c.user_id =#{userId}
+      </if>
+      <if test="custName!=null and custName!=''">
+        and c.cust_name like '%' #{custName} '%'
+      </if>
+      <if test="type!=null and type!=''">
+        and c.cust_type=#{type}
+      </if>
+      <if test="status!=null and status!=''">
+        and c.cust_status=#{status}
+      </if>
+    </where>
+    limit #{beginNo}, #{pageSize}
+  </select>
+
+  <select id="selectCountOfCustomer" parameterType="map" resultType="int">
+    select count(*)
+    from tb_customer c
+    join tb_user u1 on c.user_id = u1.id
+    join tb_user u2 on c.create_uid = u2.id
+    <where>
+      <if test="userId!=null and userId!=''">
+        and c.user_id =#{userId}
+      </if>
+      <if test="custName!=null and custName!=''">
+        and c.cust_name like '%' #{custName} '%'
+      </if>
+      <if test="type!=null and type!=''">
+        and c.cust_type=#{type}
+      </if>
+      <if test="status!=null and status!=''">
+        and c.cust_status=#{status}
+      </if>
+    </where>
+  </select>
+
+  <insert id="insertCustomer" parameterType="com.pojo.Customer">
+    insert into tb_customer (id, user_id, cust_name,
+                             cust_type, telphone, net_address,
+                             address, cust_status, create_time,
+                             create_uid, desc_info)
+    values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{custName,jdbcType=VARCHAR},
+            #{custType,jdbcType=INTEGER}, #{telphone,jdbcType=VARCHAR}, #{netAddress,jdbcType=VARCHAR},
+            #{address,jdbcType=VARCHAR}, #{custStatus,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP},
+            #{createUid,jdbcType=BIGINT}, #{descInfo,jdbcType=VARCHAR})
+  </insert>
+
+  <delete id="deleteCustomerByIds" parameterType="string">
+    delete from tb_customer where id in
+    <foreach collection="array" item="id" separator="," open="(" close=")">
+      #{id}
+    </foreach>
+  </delete>
+
+  <select id="selectAllCustomer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from tb_customer
+  </select>
+
+  <select id="selectCustomerById" parameterType="long" resultMap="BaseResultMap">
+    select c.id, c.user_id, c.cust_name, c.cust_type, c.telphone,
+           c.net_address, c.address, c.cust_status, u2.username as username, c.desc_info
+    from tb_customer c
+    join tb_user u1 on c.user_id = u1.id
+    join tb_user u2 on c.create_uid = u2.id
+    where c.id=#{id}
+  </select>
+
+  <update id="updateCustomer" parameterType="com.pojo.Customer">
+    update tb_customer
+    set user_id=#{userId}, cust_name=#{custName}, cust_type=#{custType}, telphone=#{telphone},
+        net_address=#{netAddress}, address=#{address}, cust_status=#{custStatus},
+        desc_info=#{descInfo}
+    where id=#{id}
+  </update>
+
+
+</mapper>

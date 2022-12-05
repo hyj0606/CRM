@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dao.ProviderMapper" >
+  <resultMap id="BaseResultMap" type="com.pojo.Provider" >
+    <result column="id" property="id" jdbcType="BIGINT" />
+    <result column="provider_name" property="providerName" jdbcType="VARCHAR" />
+    <result column="telphone" property="telphone" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="bank" property="bank" jdbcType="VARCHAR" />
+    <result column="net_address" property="netAddress" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_uid" property="createUid" jdbcType="BIGINT" />
+    <result column="desc_info" property="descInfo" jdbcType="VARCHAR" />
+
+    <association javaType="com.pojo.User" property="user">
+      <id column="id" jdbcType="BIGINT" property="id" />
+      <result column="username" jdbcType="VARCHAR" property="username" />
+      <result column="password" jdbcType="VARCHAR" property="password" />
+      <result column="telphone" jdbcType="VARCHAR" property="telphone" />
+      <result column="email" jdbcType="VARCHAR" property="email" />
+      <result column="address" jdbcType="VARCHAR" property="address" />
+      <result column="last_login_time" jdbcType="TIMESTAMP" property="lastLoginTime" />
+      <result column="role_id" jdbcType="BIGINT" property="roleId" />
+    </association>
+
+  </resultMap>
+  <sql id="Base_Column_List">
+        id, provider_name, telphone,
+      email, bank, net_address,
+      address, create_time, create_uid,
+      desc_info
+  </sql>
+  <insert id="insert" parameterType="com.pojo.Provider" >
+    insert into tb_provider (id, provider_name, telphone, 
+      email, bank, net_address, 
+      address, create_time, create_uid, 
+      desc_info)
+    values (#{id,jdbcType=BIGINT}, #{providerName,jdbcType=VARCHAR}, #{telphone,jdbcType=VARCHAR}, 
+      #{email,jdbcType=VARCHAR}, #{bank,jdbcType=VARCHAR}, #{netAddress,jdbcType=VARCHAR}, 
+      #{address,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{createUid,jdbcType=BIGINT}, 
+      #{descInfo,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.pojo.Provider" >
+    insert into tb_provider
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="providerName != null" >
+        provider_name,
+      </if>
+      <if test="telphone != null" >
+        telphone,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="bank != null" >
+        bank,
+      </if>
+      <if test="netAddress != null" >
+        net_address,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="createUid != null" >
+        create_uid,
+      </if>
+      <if test="descInfo != null" >
+        desc_info,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="providerName != null" >
+        #{providerName,jdbcType=VARCHAR},
+      </if>
+      <if test="telphone != null" >
+        #{telphone,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="bank != null" >
+        #{bank,jdbcType=VARCHAR},
+      </if>
+      <if test="netAddress != null" >
+        #{netAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUid != null" >
+        #{createUid,jdbcType=BIGINT},
+      </if>
+      <if test="descInfo != null" >
+        #{descInfo,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <select id="selectProviderByPage" parameterType="map" resultMap="BaseResultMap">
+    select p.id, p.provider_name, p.telphone, p.email, p.bank, p.net_address,p.address ,p.create_time,
+           p.create_uid, p.desc_info, u.username
+    from tb_provider p
+    join tb_user u on u.id=p.create_uid
+    <where>
+      <if test="providerName!=null and providerName!=''">
+        and p.provider_name like '%' #{providerName} '%'
+      </if>
+      <if test="username!=null and username!=''">
+        and u.username like '%' #{username} '%'
+      </if>
+    </where>
+    limit #{beginNo}, #{pageSize}
+  </select>
+
+  <select id="selectCountOfProvider" parameterType="map" resultType="int">
+    select count(*)
+    from tb_provider p
+    join tb_user u on u.id=p.create_uid
+    <where>
+      <if test="providerName!=null and providerName!=''">
+        and p.provider_name like '%' #{providerName} '%'
+      </if>
+      <if test="username!=null and username!=''">
+        and u.username like '%' #{username} '%'
+      </if>
+    </where>
+  </select>
+
+  <insert id="insertProvider" parameterType="com.pojo.Provider">
+    insert into tb_provider (id, provider_name, telphone,
+                             email, bank, net_address,
+                             address, create_time, create_uid,
+                             desc_info)
+    values (#{id,jdbcType=BIGINT}, #{providerName,jdbcType=VARCHAR}, #{telphone,jdbcType=VARCHAR},
+            #{email,jdbcType=VARCHAR}, #{bank,jdbcType=VARCHAR}, #{netAddress,jdbcType=VARCHAR},
+            #{address,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{createUid,jdbcType=BIGINT},
+            #{descInfo,jdbcType=VARCHAR})
+  </insert>
+
+  <select id="selectAllProvider" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from tb_provider
+  </select>
+
+  <delete id="deleteProviderByIds" parameterType="string">
+    delete from tb_provider where id in
+    <foreach collection="array" item="id" separator="," open="(" close=")">
+      #{id}
+    </foreach>
+  </delete>
+
+  <select id="selectProviderById" parameterType="long" resultMap="BaseResultMap">
+    select p.id, p.provider_name, p.telphone, p.email, p.bank, p.net_address,p.address ,p.create_time,
+           p.create_uid, p.desc_info, u.username
+    from tb_provider p
+    join tb_user u on u.id=p.create_uid
+    where p.id = #{id}
+  </select>
+
+  <update id="updateProvider" parameterType="com.pojo.Provider">
+    update tb_provider
+    set provider_name=#{providerName}, telphone=#{telphone},
+        email=#{email}, bank=#{bank}, net_address=#{netAddress},
+        address=#{address}, desc_info=#{descInfo}
+    where id=#{id}
+  </update>
+
+</mapper>

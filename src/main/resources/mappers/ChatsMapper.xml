@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.ChatsMapper">
+  <resultMap id="BaseResultMap" type="com.pojo.Chats">
+    <result column="id" jdbcType="BIGINT" property="id" />
+    <result column="cust_id" jdbcType="BIGINT" property="custId" />
+    <result column="concat_type" jdbcType="INTEGER" property="concatType" />
+    <result column="start_time" jdbcType="TIMESTAMP" property="startTime" />
+    <result column="chat_time" jdbcType="INTEGER" property="chatTime" />
+    <result column="chat_content" jdbcType="VARCHAR" property="chatContent" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="create_uid" jdbcType="BIGINT" property="createUid" />
+
+    <association javaType="com.pojo.User" property="user">
+      <id column="id" jdbcType="BIGINT" property="id" />
+      <result column="username" jdbcType="VARCHAR" property="username" />
+      <result column="password" jdbcType="VARCHAR" property="password" />
+      <result column="telphone" jdbcType="VARCHAR" property="telphone" />
+      <result column="email" jdbcType="VARCHAR" property="email" />
+      <result column="address" jdbcType="VARCHAR" property="address" />
+      <result column="last_login_time" jdbcType="TIMESTAMP" property="lastLoginTime" />
+      <result column="role_id" jdbcType="BIGINT" property="roleId" />
+    </association>
+
+    <association javaType="com.pojo.Customer" property="customer">
+      <id column="id" jdbcType="BIGINT" property="id" />
+      <result column="user_id" jdbcType="BIGINT" property="userId" />
+      <result column="cust_name" jdbcType="VARCHAR" property="custName" />
+      <result column="cust_type" jdbcType="INTEGER" property="custType" />
+      <result column="telphone" jdbcType="VARCHAR" property="telphone" />
+      <result column="net_address" jdbcType="VARCHAR" property="netAddress" />
+      <result column="address" jdbcType="VARCHAR" property="address" />
+      <result column="cust_status" jdbcType="INTEGER" property="custStatus" />
+      <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+      <result column="create_uid" jdbcType="BIGINT" property="createUid" />
+      <result column="desc_info" jdbcType="VARCHAR" property="descInfo" />
+    </association>
+  </resultMap>
+  <insert id="insert" parameterType="com.pojo.Chats">
+    insert into tb_chats (id, cust_id, concat_type, 
+      start_time, chat_time, chat_content, 
+      create_time, create_uid)
+    values (#{id,jdbcType=BIGINT}, #{custId,jdbcType=BIGINT}, #{concatType,jdbcType=INTEGER}, 
+      #{startTime,jdbcType=TIMESTAMP}, #{chatTime,jdbcType=INTEGER}, #{chatContent,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{createUid,jdbcType=BIGINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.pojo.Chats">
+    insert into tb_chats
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="custId != null">
+        cust_id,
+      </if>
+      <if test="concatType != null">
+        concat_type,
+      </if>
+      <if test="startTime != null">
+        start_time,
+      </if>
+      <if test="chatTime != null">
+        chat_time,
+      </if>
+      <if test="chatContent != null">
+        chat_content,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="custId != null">
+        #{custId,jdbcType=BIGINT},
+      </if>
+      <if test="concatType != null">
+        #{concatType,jdbcType=INTEGER},
+      </if>
+      <if test="startTime != null">
+        #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="chatTime != null">
+        #{chatTime,jdbcType=INTEGER},
+      </if>
+      <if test="chatContent != null">
+        #{chatContent,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+
+  <select id="selectChatsByPage" parameterType="map" resultMap="BaseResultMap">
+    select c.id, u.username as username, cs.cust_name as cust_name, c.concat_type,
+           c.start_time, c.chat_time, c.chat_content, c.create_time
+    from tb_chats c
+    join tb_user u on c.create_uid=u.id
+    join tb_customer cs on c.cust_id=cs.id
+    <where>
+      <if test="username!=null and username!=''">
+        and u.username like '%' #{username} '%'
+      </if>
+      <if test="custName!=null and custName!=''">
+        and cs.cust_name like '%' #{custName} '%'
+      </if>
+      <if test="concatType!=null and concatType!=''">
+        and c.concat_type =  #{concatType}
+      </if>
+    </where>
+    limit #{beginNo}, #{pageSize}
+  </select>
+  
+  <select id="selectCountOfChats" parameterType="map" resultType="int">
+    select count(*)
+    from tb_chats c
+    join tb_user u on c.create_uid=u.id
+    join tb_customer cs on c.cust_id=cs.id
+    <where>
+      <if test="username!=null and username!=''">
+        and u.username like '%' #{username} '%'
+      </if>
+      <if test="custName!=null and custName!=''">
+        and cs.cust_name like '%' #{custName} '%'
+      </if>
+      <if test="concatType!=null and concatType!=''">
+        and c.concat_type =  #{concatType}
+      </if>
+    </where>
+  </select>
+
+  <insert id="insertChats" parameterType="com.pojo.Chats">
+        insert into tb_chats (id, cust_id, concat_type,
+                              start_time, chat_time, chat_content,
+                              create_time, create_uid)
+        values (#{id,jdbcType=BIGINT}, #{custId,jdbcType=BIGINT}, #{concatType,jdbcType=INTEGER},
+                #{startTime,jdbcType=TIMESTAMP}, #{chatTime,jdbcType=INTEGER}, #{chatContent,jdbcType=VARCHAR},
+                #{createTime,jdbcType=TIMESTAMP}, #{createUid,jdbcType=BIGINT})
+  </insert>
+
+  <delete id="deleteChatsByIds" parameterType="string">
+    delete from tb_chats where id in
+    <foreach collection="array" item="id" separator="," open="(" close=")">
+      #{id}
+    </foreach>
+  </delete>
+
+  <select id="selectChatsById" parameterType="long" resultMap="BaseResultMap">
+    select c.id, c.cust_id, u.username as username, cs.cust_name as cust_name, c.concat_type,
+           c.start_time, c.chat_time, c.chat_content, c.create_time,c.create_uid
+    from tb_chats c
+    join tb_user u on c.create_uid=u.id
+    join tb_customer cs on c.cust_id=cs.id
+    where c.id = #{id}
+  </select>
+
+  <update id="updateChats" parameterType="com.pojo.Chats">
+    update tb_chats
+    set cust_id=#{custId}, concat_type=#{concatType},
+        chat_time=#{chatTime}, chat_content=#{chatContent}
+    where id=#{id}
+  </update>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dao.ConcatMapper" >
+  <resultMap id="BaseResultMap" type="com.pojo.Concat" >
+    <result column="id" property="id" jdbcType="BIGINT" />
+    <result column="cust_id" property="custId" jdbcType="BIGINT" />
+    <result column="concat_name" property="concatName" jdbcType="VARCHAR" />
+    <result column="gender" property="gender" jdbcType="INTEGER" />
+    <result column="job" property="job" jdbcType="VARCHAR" />
+    <result column="telphone" property="telphone" jdbcType="VARCHAR" />
+    <result column="wx_account" property="wxAccount" jdbcType="VARCHAR" />
+    <result column="borndate" property="borndate" jdbcType="TIMESTAMP" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="photo" property="photo" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_id" property="createId" jdbcType="BIGINT" />
+    <result column="desc_info" property="descInfo" jdbcType="VARCHAR" />
+
+    <association javaType="com.pojo.User" property="user">
+      <id column="id" jdbcType="BIGINT" property="id" />
+      <result column="username" jdbcType="VARCHAR" property="username" />
+      <result column="password" jdbcType="VARCHAR" property="password" />
+      <result column="telphone" jdbcType="VARCHAR" property="telphone" />
+      <result column="email" jdbcType="VARCHAR" property="email" />
+      <result column="address" jdbcType="VARCHAR" property="address" />
+      <result column="last_login_time" jdbcType="TIMESTAMP" property="lastLoginTime" />
+      <result column="role_id" jdbcType="BIGINT" property="roleId" />
+    </association>
+
+    <association javaType="com.pojo.Customer" property="customer">
+      <id column="id" jdbcType="BIGINT" property="id" />
+      <result column="user_id" jdbcType="BIGINT" property="userId" />
+      <result column="cust_name" jdbcType="VARCHAR" property="custName" />
+      <result column="cust_type" jdbcType="INTEGER" property="custType" />
+      <result column="telphone" jdbcType="VARCHAR" property="telphone" />
+      <result column="net_address" jdbcType="VARCHAR" property="netAddress" />
+      <result column="address" jdbcType="VARCHAR" property="address" />
+      <result column="cust_status" jdbcType="INTEGER" property="custStatus" />
+      <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+      <result column="create_uid" jdbcType="BIGINT" property="createUid" />
+      <result column="desc_info" jdbcType="VARCHAR" property="descInfo" />
+    </association>
+  </resultMap>
+
+  <insert id="insert" parameterType="com.pojo.Concat" >
+    insert into tb_concat (id, cust_id, concat_name, 
+      gender, job, telphone, 
+      wx_account, borndate, address, 
+      photo, create_time, create_id,
+      desc_info)
+    values (#{id,jdbcType=BIGINT}, #{custId,jdbcType=BIGINT}, #{concatName,jdbcType=VARCHAR}, 
+      #{gender,jdbcType=INTEGER}, #{job,jdbcType=VARCHAR}, #{telphone,jdbcType=VARCHAR}, 
+      #{wxAccount,jdbcType=VARCHAR}, #{borndate,jdbcType=TIMESTAMP}, #{address,jdbcType=VARCHAR}, 
+      #{photo,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{createId,jdbcType=BIGINT},
+      #{descInfo,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.pojo.Concat" >
+    insert into tb_concat
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="custId != null" >
+        cust_id,
+      </if>
+      <if test="concatName != null" >
+        concat_name,
+      </if>
+      <if test="gender != null" >
+        gender,
+      </if>
+      <if test="job != null" >
+        job,
+      </if>
+      <if test="telphone != null" >
+        telphone,
+      </if>
+      <if test="wxAccount != null" >
+        wx_account,
+      </if>
+      <if test="borndate != null" >
+        borndate,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="photo != null" >
+        photo,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="createId != null" >
+        create_id,
+      </if>
+      <if test="descInfo != null" >
+        desc_info,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="custId != null" >
+        #{custId,jdbcType=BIGINT},
+      </if>
+      <if test="concatName != null" >
+        #{concatName,jdbcType=VARCHAR},
+      </if>
+      <if test="gender != null" >
+        #{gender,jdbcType=INTEGER},
+      </if>
+      <if test="job != null" >
+        #{job,jdbcType=VARCHAR},
+      </if>
+      <if test="telphone != null" >
+        #{telphone,jdbcType=VARCHAR},
+      </if>
+      <if test="wxAccount != null" >
+        #{wxAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="borndate != null" >
+        #{borndate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="photo != null" >
+        #{photo,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createId != null" >
+        #{createId,jdbcType=BIGINT},
+      </if>
+      <if test="descInfo != null" >
+        #{descInfo,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <select id="selectConcatByPage" parameterType="map" resultMap="BaseResultMap">
+    select c.id, c.concat_name, cs.cust_name as cust_name, u.username as username, c.gender, c.job,
+           c.telphone, c.wx_account, c.borndate, c.address, c.photo, c.create_time, 
+           c.desc_info
+    from tb_concat c
+    join tb_customer cs on c.cust_id = cs.id
+    join tb_user u on c.create_id = u.id
+    <where>
+      <if test="custName!=null and custName!=''">
+        and cs.cust_name like '%' #{custName} '%'
+      </if>
+      <if test="concatName!=null and concatName!=''">
+        and c.concat_name like '%' #{concatName} '%'
+      </if>
+      <if test="username!=null and username!=''">
+        and u.username like '%' #{username} '%'
+      </if>
+    </where>
+    limit #{beginNo}, #{pageSize}
+  </select>
+  
+  <select id="selectCountOfConcat" parameterType="map" resultType="int">
+    select count(*)
+    from tb_concat c
+    join tb_customer cs on c.cust_id = cs.id
+    join tb_user u on c.create_id = u.id
+    <where>
+      <if test="custName!=null and custName!=''">
+        and cs.cust_name like '%' #{custName} '%'
+      </if>
+      <if test="concatName!=null and concatName!=''">
+        and c.concat_name like '%' #{concatName} '%'
+      </if>
+      <if test="username!=null and username!=''">
+        and u.username like '%' #{username} '%'
+      </if>
+    </where>
+  </select>
+
+  <insert id="insertConcat" parameterType="com.pojo.Concat">
+    insert into tb_concat (
+      id, cust_id, concat_name,
+      gender, job, telphone,
+      wx_account, borndate, address,
+      photo, create_time, create_id,
+      desc_info) values (
+       #{id,jdbcType=BIGINT}, #{custId,jdbcType=BIGINT}, #{concatName,jdbcType=VARCHAR},
+       #{gender,jdbcType=INTEGER}, #{job,jdbcType=VARCHAR}, #{telphone,jdbcType=VARCHAR},
+       #{wxAccount,jdbcType=VARCHAR}, #{borndate,jdbcType=TIMESTAMP}, #{address,jdbcType=VARCHAR},
+       #{photo,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{createId,jdbcType=BIGINT},
+       #{descInfo,jdbcType=VARCHAR})
+  </insert>
+
+  <delete id="deleteConcatByIds" parameterType="string">
+    delete from tb_concat
+    where id in
+    <foreach collection="array" item="id" separator="," open="(" close=")">
+      #{id}
+    </foreach>
+  </delete>
+
+  <select id="selectConcatById" parameterType="long" resultMap="BaseResultMap">
+    select c.id, c.concat_name, cs.cust_name as cust_name,c.cust_id, u.username as username, c.create_id, c.gender, c.job,
+           c.telphone, c.wx_account, c.borndate, c.address, c.photo, c.create_time,
+           c.desc_info
+    from tb_concat c
+    join tb_customer cs on c.cust_id = cs.id
+    join tb_user u on c.create_id = u.id
+    where c.id=#{id}
+  </select>
+
+  <update id="updateConcat" parameterType="com.pojo.Concat">
+    update tb_concat
+    set concat_name=#{concatName},
+        gender=#{gender}, job=#{job}, telphone=#{telphone},
+        wx_account=#{wxAccount}, borndate=#{borndate}, address=#{address},
+        photo=#{photo}, desc_info=#{descInfo}
+    where id=#{id}
+  </update>
+
+</mapper>

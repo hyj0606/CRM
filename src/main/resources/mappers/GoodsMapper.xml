@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.GoodsMapper">
+  <resultMap id="BaseResultMap" type="com.pojo.Goods">
+    <result column="id" jdbcType="BIGINT" property="id" />
+    <result column="provider_id" jdbcType="BIGINT" property="providerId" />
+    <result column="goods_name" jdbcType="VARCHAR" property="goodsName" />
+    <result column="unit" jdbcType="VARCHAR" property="unit" />
+    <result column="cost" jdbcType="DOUBLE" property="cost" />
+    <result column="sale_price" jdbcType="DOUBLE" property="salePrice" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="create_uid" jdbcType="BIGINT" property="createUid" />
+    <result column="desc_info" jdbcType="VARCHAR" property="descInfo" />
+    <result column="goods_img" jdbcType="VARCHAR" property="goodsImg" />
+
+    <association javaType="com.pojo.Provider" property="provider" >
+      <id column="id" property="id" jdbcType="BIGINT" />
+      <result column="provider_name" property="providerName" jdbcType="VARCHAR" />
+      <result column="telphone" property="telphone" jdbcType="VARCHAR" />
+      <result column="email" property="email" jdbcType="VARCHAR" />
+      <result column="bank" property="bank" jdbcType="VARCHAR" />
+      <result column="net_address" property="netAddress" jdbcType="VARCHAR" />
+      <result column="address" property="address" jdbcType="VARCHAR" />
+      <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+      <result column="create_uid" property="createUid" jdbcType="BIGINT" />
+      <result column="desc_info" property="descInfo" jdbcType="VARCHAR" />
+    </association>
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, provider_id, goods_name,
+      unit, cost, sale_price,
+      create_time, create_uid, desc_info,
+      goods_img
+  </sql>
+  <insert id="insert" parameterType="com.pojo.Goods">
+    insert into tb_goods (id, provider_id, goods_name,
+      unit, cost, sale_price, 
+      create_time, create_uid, desc_info, 
+      goods_img)
+    values (#{id,jdbcType=BIGINT}, #{providerId,jdbcType=BIGINT}, #{goodsName,jdbcType=VARCHAR},
+      #{unit,jdbcType=VARCHAR}, #{cost,jdbcType=DOUBLE}, #{salePrice,jdbcType=DOUBLE}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{createUid,jdbcType=BIGINT}, #{descInfo,jdbcType=VARCHAR}, 
+      #{goodsImg,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.pojo.Goods">
+    insert into tb_goods
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="providerId != null">
+        provider_id,
+      </if>
+      <if test="goodsName != null">
+        goods_name,
+      </if>
+      <if test="unit != null">
+        unit,
+      </if>
+      <if test="cost != null">
+        cost,
+      </if>
+      <if test="salePrice != null">
+        sale_price,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="createUid != null">
+        create_uid,
+      </if>
+      <if test="descInfo != null">
+        desc_info,
+      </if>
+      <if test="goodsImg != null">
+        goods_img,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="providerId != null">
+        #{providerId,jdbcType=BIGINT},
+      </if>
+      <if test="goodsName != null">
+        #{goodsName,jdbcType=VARCHAR},
+      </if>
+      <if test="unit != null">
+        #{unit,jdbcType=VARCHAR},
+      </if>
+      <if test="cost != null">
+        #{cost,jdbcType=DOUBLE},
+      </if>
+      <if test="salePrice != null">
+        #{salePrice,jdbcType=DOUBLE},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUid != null">
+        #{createUid,jdbcType=BIGINT},
+      </if>
+      <if test="descInfo != null">
+        #{descInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsImg != null">
+        #{goodsImg,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <select id="selectGoodsByPage" parameterType="map" resultMap="BaseResultMap">
+    select g.id, g.goods_name, g.unit, g.cost, g.sale_price, g.create_time, g.create_uid,
+           g.desc_info, g.goods_img, p.provider_name
+    from tb_goods g
+    join tb_provider p on g.provider_id=p.id
+    <where>
+      <if test="providerName!=null and providerName!=''">
+        and p.provider_name like '%' #{providerName} '%'
+      </if>
+      <if test="goodsName!=null and goodsName!=''">
+        and g.goods_name like '%' #{goodsName} '%'
+      </if>
+    </where>
+    limit #{beginNo}, #{pageSize}
+  </select>
+  
+  <select id="selectCountOfGoods" parameterType="map" resultType="int">
+    select count(*)
+    from tb_goods g
+    join tb_provider p on g.provider_id=p.id
+    <where>
+      <if test="providerName!=null and providerName!=''">
+        and p.provider_name like '%' #{providerName} '%'
+      </if>
+      <if test="goodsName!=null and goodsName!=''">
+        and g.goods_name like '%' #{goodsName} '%'
+      </if>
+    </where>
+  </select>
+
+  <insert id="insertGoods" parameterType="com.pojo.Goods">
+    insert into tb_goods (id, provider_id, goods_name,
+                          unit, cost, sale_price,
+                          create_time, create_uid, desc_info,
+                          goods_img)
+    values (#{id,jdbcType=BIGINT}, #{providerId,jdbcType=BIGINT}, #{goodsName,jdbcType=VARCHAR},
+            #{unit,jdbcType=VARCHAR}, #{cost,jdbcType=DOUBLE}, #{salePrice,jdbcType=DOUBLE},
+            #{createTime,jdbcType=TIMESTAMP}, #{createUid,jdbcType=BIGINT}, #{descInfo,jdbcType=VARCHAR},
+            #{goodsImg,jdbcType=VARCHAR})
+  </insert>
+
+  <delete id="deleteGoodsByIds" parameterType="long">
+    delete from tb_goods where id in
+    <foreach collection="array" item="id" separator="," open="(" close=")">
+      #{id}
+    </foreach>
+  </delete>
+
+  <select id="selectGoodsById" parameterType="long" resultMap="BaseResultMap">
+    select g.id,g.provider_id, g.goods_name, g.unit, g.cost, g.sale_price, g.create_time, g.create_uid,
+           g.desc_info, g.goods_img, p.provider_name,p.id
+    from tb_goods g
+    join tb_provider p on g.provider_id=p.id
+    where g.id = #{id}
+  </select>
+
+  <update id="updateGoods" parameterType="com.pojo.Goods">
+    update tb_goods
+    set goods_name=#{goodsName},
+        unit=#{unit}, cost=#{cost}, sale_price=#{salePrice},
+        desc_info=#{descInfo}, goods_img=#{goodsImg}
+    where id=#{id}
+  </update>
+
+  <select id="selectAllGoods" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from tb_goods
+  </select>
+
+</mapper>

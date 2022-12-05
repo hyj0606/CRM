@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dao.BusinessMapper" >
+  <resultMap id="BaseResultMap" type="com.pojo.Business" >
+    <result column="id" property="id" jdbcType="BIGINT" />
+    <result column="cust_id" property="custId" jdbcType="BIGINT" />
+    <result column="busi_type" property="busiType" jdbcType="INTEGER" />
+    <result column="busi_status" property="busiStatus" jdbcType="INTEGER" />
+    <result column="busi_price" property="busiPrice" jdbcType="DOUBLE" />
+    <result column="busi_possibility" property="busiPossibility" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_uid" property="createUid" jdbcType="BIGINT" />
+    <result column="busi_end_time" property="busiEndTime" jdbcType="TIMESTAMP" />
+    <result column="desc_info" property="descInfo" jdbcType="VARCHAR" />
+    <association javaType="com.pojo.User" property="user">
+      <id column="id" jdbcType="BIGINT" property="id" />
+      <result column="username" jdbcType="VARCHAR" property="username" />
+      <result column="password" jdbcType="VARCHAR" property="password" />
+      <result column="telphone" jdbcType="VARCHAR" property="telphone" />
+      <result column="email" jdbcType="VARCHAR" property="email" />
+      <result column="address" jdbcType="VARCHAR" property="address" />
+      <result column="last_login_time" jdbcType="TIMESTAMP" property="lastLoginTime" />
+      <result column="role_id" jdbcType="BIGINT" property="roleId" />
+    </association>
+    <association javaType="com.pojo.Customer" property="customer">
+      <id column="id" jdbcType="BIGINT" property="id" />
+      <result column="user_id" jdbcType="BIGINT" property="userId" />
+      <result column="cust_name" jdbcType="VARCHAR" property="custName" />
+      <result column="cust_type" jdbcType="INTEGER" property="custType" />
+      <result column="telphone" jdbcType="VARCHAR" property="telphone" />
+      <result column="net_address" jdbcType="VARCHAR" property="netAddress" />
+      <result column="address" jdbcType="VARCHAR" property="address" />
+      <result column="cust_status" jdbcType="INTEGER" property="custStatus" />
+      <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+      <result column="create_uid" jdbcType="BIGINT" property="createUid" />
+      <result column="desc_info" jdbcType="VARCHAR" property="descInfo" />
+    </association>
+  </resultMap>
+  <insert id="insert" parameterType="com.pojo.Business" >
+    insert into tb_business (id, cust_id, busi_type, 
+      busi_status, busi_price, busi_possibility, 
+      create_time, create_uid, busi_end_time, 
+      desc_info)
+    values (#{id,jdbcType=BIGINT}, #{custId,jdbcType=BIGINT}, #{busiType,jdbcType=INTEGER}, 
+      #{busiStatus,jdbcType=INTEGER}, #{busiPrice,jdbcType=DOUBLE}, #{busiPossibility,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{createUid,jdbcType=BIGINT}, #{busiEndTime,jdbcType=TIMESTAMP}, 
+      #{descInfo,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.pojo.Business" >
+    insert into tb_business
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="custId != null" >
+        cust_id,
+      </if>
+      <if test="busiType != null" >
+        busi_type,
+      </if>
+      <if test="busiStatus != null" >
+        busi_status,
+      </if>
+      <if test="busiPrice != null" >
+        busi_price,
+      </if>
+      <if test="busiPossibility != null" >
+        busi_possibility,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="createUid != null" >
+        create_uid,
+      </if>
+      <if test="busiEndTime != null" >
+        busi_end_time,
+      </if>
+      <if test="descInfo != null" >
+        desc_info,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="custId != null" >
+        #{custId,jdbcType=BIGINT},
+      </if>
+      <if test="busiType != null" >
+        #{busiType,jdbcType=INTEGER},
+      </if>
+      <if test="busiStatus != null" >
+        #{busiStatus,jdbcType=INTEGER},
+      </if>
+      <if test="busiPrice != null" >
+        #{busiPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="busiPossibility != null" >
+        #{busiPossibility,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUid != null" >
+        #{createUid,jdbcType=BIGINT},
+      </if>
+      <if test="busiEndTime != null" >
+        #{busiEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="descInfo != null" >
+        #{descInfo,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <select id="selectBusinessByPage" parameterType="map" resultMap="BaseResultMap">
+    select b.id, c.cust_name, b.busi_type, b.busi_status, b.busi_price, b.busi_possibility,
+           b.create_time, u.username, b.busi_end_time, b.desc_info
+    from tb_business b
+    join tb_user u on b.create_uid=u.id
+    join tb_customer c on b.cust_id=c.id
+    <where>
+      <if test="custName!=null and custName!=''">
+        and c.cust_name like '%' #{custName} '%'
+      </if>
+      <if test="busiType!=null and busiType!=''">
+        and b.busi_type=#{busiType}
+      </if>
+      <if test="busiStatus!=null and busiStatus!=''">
+        and b.busi_status = #{busiStatus}
+      </if>
+    </where>
+    limit #{beginNo}, #{pageSize}
+  </select>
+
+  <select id="selectCountOfCustomer" parameterType="map" resultType="int">
+    select count(*)
+    from tb_business b
+    join tb_user u on b.create_uid=u.id
+    join tb_customer c on b.cust_id=c.id
+    <where>
+      <if test="custName!=null and custName!=''">
+        and c.cust_name like '%' #{custName} '%'
+      </if>
+      <if test="busiType!=null and busiType!=''">
+        and b.busi_type=#{busiType}
+      </if>
+      <if test="busiStatus!=null and busiStatus!=''">
+        and b.busi_status = #{busiStatus}
+      </if>
+    </where>
+  </select>
+
+  <insert id="insertBusiness" parameterType="com.pojo.Business">
+    insert into tb_business (id,cust_id, busi_type,
+                             busi_status, busi_price, busi_possibility,
+                             create_time, create_uid, busi_end_time,
+                             desc_info)
+    values (#{id,jdbcType=BIGINT},#{custId,jdbcType=BIGINT}, #{busiType,jdbcType=INTEGER},
+      #{busiStatus,jdbcType=INTEGER}, #{busiPrice,jdbcType=DOUBLE}, #{busiPossibility,jdbcType=INTEGER},
+      #{createTime,jdbcType=TIMESTAMP}, #{createUid,jdbcType=BIGINT}, #{busiEndTime,jdbcType=TIMESTAMP},
+      #{descInfo,jdbcType=VARCHAR})
+  </insert>
+
+  <delete id="deleteBusinessByIds" parameterType="long">
+    delete from tb_business where id in
+    <foreach collection="array" item="id" separator="," open="(" close=")">
+      #{id}
+    </foreach>
+  </delete>
+
+  <select id="selectBusinessById" parameterType="long" resultMap="BaseResultMap">
+    select b.id, c.cust_name,b.cust_id , b.busi_type, b.busi_status, b.busi_price, b.busi_possibility,
+           b.create_time, u.username, b.busi_end_time, b.desc_info
+    from tb_business b
+    join tb_user u on b.create_uid=u.id
+    join tb_customer c on b.cust_id=c.id
+    where b.id = #{id}
+  </select>
+
+  <update id="updateBusiness" parameterType="com.pojo.Business">
+    update tb_business
+    set cust_id=#{custId}, busi_type=#{busiType},
+        busi_status=#{busiStatus}, busi_price=#{busiPrice}, busi_possibility=#{busiPossibility},
+        busi_end_time=#{busiEndTime},desc_info=#{descInfo}
+    where id=#{id}
+  </update>
+
+</mapper>
